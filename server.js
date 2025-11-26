@@ -8,13 +8,8 @@ const PORT = process.env.PORT || 3000;
 
 // قاعدة البيانات (استبدل بـDB_URL في Render)
 const pool = new Pool({
-  user: 'postgres', // في Termux: postgres
-  host: 'localhost',
-  database: 'connectsphere',
-  password: 'password', // غيرها
-  port: 5432,
+  connectionString: process.env.DATABASE_URL || `postgres://\( {DB_USER}: \){DB_PASSWORD}@\( {DB_HOST}: \){DB_PORT}/${DB_NAME}`,
 });
-
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public')); // للواجهة
