@@ -9,17 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const errorMsg = document.getElementById('errorMessage');
 
   // زر إظهار/إخفاء كلمة المرور
-toggleBtn.addEventListener('click', () => {
-  const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-  passwordInput.setAttribute('type', type);
-  
-  const icon = document.getElementById('eyeIcon');
-  if (type === 'password') {
-    icon.classList.replace('fa-eye-slash', 'fa-eye');
-  } else {
-    icon.classList.replace('fa-eye', 'fa-eye-slash');
-  }
-});
+  toggleBtn.addEventListener('click', () => {
+    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordInput.setAttribute('type', type);
+    toggleBtn.textContent = type === 'password' ? '👁️' : '🔒';
+    toggleBtn.setAttribute('aria-label', 
+      type === 'password' ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'
+    );
+  });
 
   // إرسال النموذج
   form.addEventListener('submit', async (e) => {
@@ -51,7 +48,7 @@ toggleBtn.addEventListener('click', () => {
         
         // إعادة التوجيه إلى لوحة التحكم (لاحقًا)
         alert(`مرحبًا، ${data.user.username}!`);
-        window.location.href = '/feed'; // أو صفحة رئيسية لاحقًا
+        window.location.href = '/'; // أو صفحة رئيسية لاحقًا
       } else {
         errorMsg.textContent = data.error || 'حدث خطأ غير متوقع';
         errorMsg.style.display = 'block';
