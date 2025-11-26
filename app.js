@@ -24,10 +24,6 @@ app.get('/register', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'register.html'));
 });
 
-app.get('/', (req, res) => {
-  res.redirect('/feed'); // ← تغيير هنا
-});
-
 // أضف خدمة صفحة feed.html
 app.get('/feed', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'feed.html'));
