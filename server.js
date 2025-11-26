@@ -59,7 +59,11 @@ app.post('/api/login', (req, res) => {
   const token = jwt.sign({ id: user.id }, SECRET);
   res.json({ token, user: { id: user.id, username: user.username } });
 });
-
+app.post('/api/register', (req, res) => {
+  const { username, email, bio, password } = req.body;
+  console.log('طلب تسجيل:', { username, email }); // تشخيص
+  // ... باقي الكود
+});
 // middleware للتحقق (اختياري لـAPI محمية)
 function auth(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];
