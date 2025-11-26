@@ -1,3 +1,19 @@
+
 {
-  "users": []
+  "users": [
+    {
+      "id": 1,
+      "username": "ahmad",
+      "email": "ahmad@example.com",
+      "password": "123456",
+      "posts": [
+        {
+          "id": 1,
+          "userId": 1,
+          "content": "مرحبًا، هذه أول مشاركة!",
+          "timestamp": "2025-11-27T10:00:00Z"
+        }
+      ]
+    }
+  ]
 }
