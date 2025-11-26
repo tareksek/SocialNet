@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // إعادة التوجيه إلى لوحة التحكم (لاحقًا)
         alert(`مرحبًا، ${data.user.username}!`);
-        window.location.href = '/'; // أو صفحة رئيسية لاحقًا
+        window.location.href = '/feed'; // أو صفحة رئيسية لاحقًا
       } else {
         errorMsg.textContent = data.error || 'حدث خطأ غير متوقع';
         errorMsg.style.display = 'block';
