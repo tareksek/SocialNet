@@ -24,9 +24,9 @@ app.get('/register', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'register.html'));
 });
 
-// أضف خدمة صفحة feed.html
-app.get('/feed', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'feed.html'));
+// إعادة توجيه الجذر إلى تسجيل الدخول
+app.get('/', (req, res) => {
+  res.redirect('/login');
 });
 
 // API: جلب المشاركات (نحتفظ به كما هو)
