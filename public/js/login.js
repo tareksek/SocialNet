@@ -9,14 +9,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const errorMsg = document.getElementById('errorMessage');
 
   // زر إظهار/إخفاء كلمة المرور
-  toggleBtn.addEventListener('click', () => {
-    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-    passwordInput.setAttribute('type', type);
-    toggleBtn.textContent = type === 'password' ? '👁️' : '🔒';
-    toggleBtn.setAttribute('aria-label', 
-      type === 'password' ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'
-    );
-  });
+toggleBtn.addEventListener('click', () => {
+  const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+  passwordInput.setAttribute('type', type);
+  
+  const icon = document.getElementById('eyeIcon');
+  if (type === 'password') {
+    icon.classList.replace('fa-eye-slash', 'fa-eye');
+  } else {
+    icon.classList.replace('fa-eye', 'fa-eye-slash');
+  }
+});
 
   // إرسال النموذج
   form.addEventListener('submit', async (e) => {
