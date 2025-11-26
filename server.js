@@ -1,64 +1,71 @@
+
 const express = require('express');
-const { Pool } = require('pg');
+const fs = require('fs');
+const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const app = express();
-const PORT = process.env.PORT || 3000
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || `postgres://\( {process.env.DB_USER}: \){process.env.DB_PASSWORD}@\( {process.env.DB_HOST}: \){process.env.DB_PORT}/${process.env.DB_NAME}`,
-});
+const PORT = process.env.PORT || 3000;
+const DB_PATH = path.join(__dirname, 'database.json');
+
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static('public')); // للواجهة
+app.use(express.static('public'));
 
-// SQL لإنشاء جدول (شغله مرة واحدة)
-const createTable = `
-  CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    bio TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  );
-`;
+// وظائف قاعدة البيانات البسيطة
+function readDB() {
+  try {
+    const data = fs.readFileSync(DB_PATH, 'utf8');
+    return JSON.parse(data);
+  } catch (err) {
+    return { users: [] }; // إذا غير موجود، أنشئ فارغ
+  }
+}
 
-// إنشاء الجدول عند التشغيل
-pool.query(createTable);
+function writeDB(data) {
+  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
+}
+
+// إنشاء جدول افتراضي (مرة واحدة)
+const initialDB = readDB();
+if (initialDB.users.length === 0) {
+  writeDB({ users: [] });
+}
 
 // API: تسجيل مستخدم
-app.post('/api/register', async (req, res) => {
+app.post('/api/register', (req, res) => {
   const { username, email, bio } = req.body;
-  try {
-    const result = await pool.query(
-      'INSERT INTO users (username, email, bio) VALUES ($1, $2, $3) RETURNING *',
-      [username, email, bio]
-    );
-    res.json(result.rows[0]);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+  const db = readDB();
+  if (db.users.find(u => u.username === username || u.email === email)) {
+    return res.status(400).json({ error: 'مستخدم موجود' });
   }
+  const newUser = {
+    id: Date.now(), // ID بسيط
+    username,
+    email,
+    bio,
+    created_at: new Date().toISOString()
+  };
+  db.users.push(newUser);
+  writeDB(db);
+  res.json(newUser);
 });
 
 // API: جلب الملف الشخصي
-app.get('/api/profile/:id', async (req, res) => {
+app.get('/api/profile/:id', (req, res) => {
   const { id } = req.params;
-  try {
-    const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-    res.json(result.rows[0] || { error: 'غير موجود' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  const db = readDB();
+  const user = db.users.find(u => u.id == id);
+  if (!user) return res.status(404).json({ error: 'غير موجود' });
+  res.json(user);
 });
 
-// API: تغذية بسيطة (قائمة مستخدمين)
-app.get('/api/feed', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM users ORDER BY created_at DESC LIMIT 10');
-    res.json(result.rows);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+// API: تغذية (قائمة مستخدمين)
+app.get('/api/feed', (req, res) => {
+  const db = readDB();
+  const feed = db.users.slice(-10).reverse(); // آخر 10
+  res.json(feed);
 });
 
 app.listen(PORT, () => console.log(`الخادم يعمل على http://localhost:${PORT}`));
