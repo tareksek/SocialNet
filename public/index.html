@@ -8,21 +8,27 @@
 </head>
 <body>
   <div class="container">
-    <h1>ConnectSphere - الشبكة الاجتماعية</h1>
+    <h1>ConnectSphere</h1>
     
-    <!-- نموذج التسجيل -->
+    <!-- تسجيل -->
     <form id="registerForm">
-      <input type="text" id="username" placeholder="اسم المستخدم" required>
-      <input type="email" id="email" placeholder="البريد الإلكتروني" required>
-      <textarea id="bio" placeholder="نبذة عنك"></textarea>
+      <input type="text" id="regUsername" placeholder="اسم المستخدم" required>
+      <input type="email" id="regEmail" placeholder="البريد" required>
+      <input type="password" id="regPassword" placeholder="كلمة المرور" required>
+      <textarea id="regBio" placeholder="نبذة"></textarea>
       <button type="submit">تسجيل</button>
     </form>
     
-    <!-- التغذية -->
-    <div id="feed"></div>
+    <!-- تسجيل دخول -->
+    <form id="loginForm">
+      <input type="email" id="loginEmail" placeholder="البريد" required>
+      <input type="password" id="loginPassword" placeholder="كلمة المرور" required>
+      <button type="submit">دخول</button>
+    </form>
     
-    <!-- عرض الملف الشخصي -->
+    <div id="feed"></div>
     <div id="profile"></div>
+    <div id="status"></div>
   </div>
   <script src="script.js"></script>
 </body>
