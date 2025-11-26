@@ -137,7 +137,7 @@ app.get('/feed', (req, res) => {
 
 // 🏠 توجيه الجذر إلى تسجيل الدخول
 app.get('/', (req, res) => {
-  res.redirect('/login');
+  res.redirect('/feed');
 });
 
 // 🌐 خدمة الواجهة الأمامية (index.html)
