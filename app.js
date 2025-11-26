@@ -26,7 +26,7 @@ app.get('/register', (req, res) => {
 
 // إعادة توجيه الجذر إلى تسجيل الدخول
 app.get('/', (req, res) => {
-  res.redirect('/login');
+  res.redirect('/feed');
 });
 
 // API: جلب المشاركات (نحتفظ به كما هو)
