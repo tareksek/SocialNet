@@ -8,11 +8,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const toggleBtn = document.querySelector('.toggle-password');
   const errorMsg = document.getElementById('errorMessage');
 
-  toggleBtn.addEventListener('click', () => {
-    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-    passwordInput.setAttribute('type', type);
-    toggleBtn.textContent = type === 'password' ? '👁️' : '🔒';
-  });
+  // في login.js
+toggleBtn.addEventListener('click', () => {
+  const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+  passwordInput.setAttribute('type', type);
+  
+  const icon = document.getElementById('eyeIcon');
+  if (type === 'password') {
+    icon.classList.replace('fa-eye-slash', 'fa-eye');
+  } else {
+    icon.classList.replace('fa-eye', 'fa-eye-slash');
+  }
+});
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
