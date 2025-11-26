@@ -1,35 +1,59 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ConnectSphere</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>شبكتي - تواصل اجتماعي</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>ConnectSphere</h1>
-    
-    <!-- تسجيل -->
-    <form id="registerForm">
-      <input type="text" id="regUsername" placeholder="اسم المستخدم" required>
-      <input type="email" id="regEmail" placeholder="البريد" required>
-      <input type="password" id="regPassword" placeholder="كلمة المرور" required>
-      <textarea id="regBio" placeholder="نبذة"></textarea>
-      <button type="submit">تسجيل</button>
-    </form>
-    
-    <!-- تسجيل دخول -->
-    <form id="loginForm">
-      <input type="email" id="loginEmail" placeholder="البريد" required>
-      <input type="password" id="loginPassword" placeholder="كلمة المرور" required>
-      <button type="submit">دخول</button>
-    </form>
-    
-    <div id="feed"></div>
-    <div id="profile"></div>
-    <div id="status"></div>
-  </div>
+  <header>
+    <h1>شبكتي</h1>
+    <div id="authButtons">
+      <button onclick="showLogin()">تسجيل الدخول</button>
+      <button onclick="showRegister()">إنشاء حساب</button>
+    </div>
+    <div id="userPanel" style="display: none;">
+      <span id="welcomeMsg"></span>
+      <button onclick="logout()">خروج</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- نموذج التسجيل -->
+    <div id="registerForm" class="form-box" style="display: none;">
+      <h2>إنشاء حساب</h2>
+      <input type="text" id="regUsername" placeholder="اسم المستخدم" />
+      <input type="email" id="regEmail" placeholder="البريد الإلكتروني" />
+      <input type="password" id="regPassword" placeholder="كلمة المرور" />
+      <button onclick="register()">تسجيل</button>
+      <p>هل لديك حساب؟ <a href="#" onclick="showLogin(); return false;">سجّل الدخول</a></p>
+    </div>
+
+    <!-- نموذج تسجيل الدخول -->
+    <div id="loginForm" class="form-box" style="display: none;">
+      <h2>تسجيل الدخول</h2>
+      <input type="email" id="loginEmail" placeholder="البريد الإلكتروني" />
+      <input type="password" id="loginPassword" placeholder="كلمة المرور" />
+      <button onclick="login()">دخول</button>
+      <p>ليس لديك حساب؟ <a href="#" onclick="showRegister(); return false;">أنشئ واحدًا</a></p>
+    </div>
+
+    <!-- لوحة النشر (تظهر بعد تسجيل الدخول) -->
+    <div id="postForm" class="form-box" style="display: none;">
+      <h2>ما الجديد؟</h2>
+      <textarea id="postContent" placeholder="اكتب شيئًا..." rows="3"></textarea>
+      <button onclick="createPost()">نشر</button>
+    </div>
+
+    <!-- عرض المشاركات -->
+    <div id="postsContainer">
+      <h2>آخر المشاركات</h2>
+      <div id="postsList"></div>
+    </div>
+  </main>
+
   <script src="script.js"></script>
 </body>
 </html>
