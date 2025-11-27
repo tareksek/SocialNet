@@ -1,167 +1,0 @@
-
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>آخر الأخبار - شبكتي</title>
-  <link rel="stylesheet" href="css/feed.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
-  
-  <!-- ✅ Font Awesome 6 Free (SVG with JS) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js" 
-          integrity="sha512-..." 
-          crossorigin="anonymous" 
-          referrerpolicy="no-referrer"></script>
-  
-  <!-- ملاحظة: integrity hash مُهم للأمان — سأعطيك القيمة الصحيحة لاحقًا -->
-</head>
-<body>
-  <!-- 🔝 الشريط العلوي -->
-  <header class="top-nav">
-    <div class="nav-left">
-      <div class="logo">
-        <i class="fa-solid fa-users fa-lg" style="color: #1877f2;"></i>
-        <span class="logo-text">شبكتي</span>
-      </div>
-
-      <div class="search-box">
-        <input type="text" placeholder="ابحث عن أشخاص أو مجموعات..." />
-        <button class="search-btn">
-          <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
-      </div>
-    </div>
-
-    <div class="nav-center">
-      <a href="#" class="nav-item active">
-        <i class="fa-solid fa-house"></i>
-        <span>الرئيسية</span>
-      </a>
-      <a href="#" class="nav-item">
-        <i class="fa-regular fa-user-group"></i>
-        <span>الأصدقاء</span>
-      </a>
-      <a href="#" class="nav-item">
-        <i class="fa-regular fa-users"></i>
-        <span>المجموعات</span>
-      </a>
-      <a href="#" class="nav-item">
-        <i class="fa-solid fa-shop"></i>
-        <span>السوق</span>
-      </a>
-      <a href="#" class="nav-item">
-        <i class="fa-solid fa-tv"></i>
-        <span>المشاهدة</span>
-      </a>
-      <a href="#" class="nav-item">
-        <i class="fa-solid fa-gamepad"></i>
-        <span>الألعاب</span>
-      </a>
-    </div>
-
-    <div class="nav-right">
-      <button class="icon-btn" aria-label="الإشعارات">
-        <i class="fa-regular fa-bell"></i>
-        <span class="badge">3</span>
-      </button>
-      <button class="icon-btn" aria-label="الرسائل">
-        <i class="fa-regular fa-message"></i>
-        <span class="badge">1</span>
-      </button>
-      <div class="user-menu">
-        <img src="https://via.placeholder.com/32/1877f2/ffffff?text=أ" alt="صورة المستخدم" class="user-avatar" />
-        <span id="userName">أحمد</span>
-        <i class="fa-solid fa-caret-down fa-xs"></i>
-      </div>
-    </div>
-  </header>
-
-  <!-- 📝 مربع إنشاء المنشور -->
-  <main class="main-content">
-    <section class="create-post">
-      <div class="post-header">
-        <img src="https://via.placeholder.com/40/1877f2/ffffff?text=أ" alt="أحمد" class="post-avatar" />
-        <button class="post-input" id="postTrigger">
-          ماذا تفكر به، <span id="userDisplayName">أحمد</span>؟
-        </button>
-      </div>
-
-      <div class="post-actions">
-        <button class="post-action-btn">
-          <i class="fa-solid fa-image" style="color: #45bd62;"></i>
-          <span>صورة/فيديو</span>
-        </button>
-        <button class="post-action-btn">
-          <i class="fa-solid fa-circle" style="color: #f7823c;"></i>
-          <span>بث حي</span>
-        </button>
-        <button class="post-action-btn">
-          <i class="fa-solid fa-gift" style="color: #e9528e;"></i>
-          <span>حدث</span>
-        </button>
-        <button class="post-action-btn">
-          <i class="fa-solid fa-face-smile" style="color: #408ae5;"></i>
-          <span>إحساس/نشاط</span>
-        </button>
-      </div>
-
-      <!-- 🪟 النافذة المنبثقة -->
-      <div class="post-modal" id="postModal" style="display: none;">
-        <div class="modal-overlay" id="modalOverlay"></div>
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3>أنشئ منشورًا</h3>
-            <button class="close-btn" id="closeModal">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-          <!-- ... باقي المحتوى كما هو ... -->
-        </div>
-      </div>
-    </section>
-
-    <!-- 📋 المنشورات -->
-    <section class="feed" id="feedContainer">
-      <div class="loader" id="feedLoader">
-        <i class="fa-solid fa-spinner fa-spin"></i> يتم التحميل...
-      </div>
-    </section>
-  </main>
-
-  <!-- 📱 القائمة الجانبية -->
-  <aside class="sidebar">
-    <div class="shortcut">
-      <img src="https://via.placeholder.com/48/1877f2/ffffff?text=أ" alt="أحمد" />
-      <span>أحمد محمد</span>
-    </div>
-    <div class="shortcut">
-      <div class="icon-circle" style="background:#e7f3ff;color:#1877f2">
-        <i class="fa-regular fa-user-group"></i>
-      </div>
-      <span>الأصدقاء</span>
-    </div>
-    <div class="shortcut">
-      <div class="icon-circle" style="background:#e9f7ef;color:#45bd62">
-        <i class="fa-solid fa-shop"></i>
-      </div>
-      <span>السوق</span>
-    </div>
-    <div class="shortcut">
-      <div class="icon-circle" style="background:#fdf2e9;color:#f7823c">
-        <i class="fa-regular fa-clock"></i>
-      </div>
-      <span>الذكريات</span>
-    </div>
-    <div class="shortcut">
-      <div class="icon-circle" style="background:#f9f7ff;color:#7a59b5">
-        <i class="fa-solid fa-tv"></i>
-      </div>
-      <span>المشاهدة</span>
-    </div>
-  </aside>
-
-  <script src="js/utils.js" type="module"></script>
-  <script src="js/feed.js" type="module"></script>
-</body>
-</html>
