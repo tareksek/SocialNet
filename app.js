@@ -1,115 +1,98 @@
 
-// server.js
 const express = require('express');
-const path = require('path');
+const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const fs = require('fs');
 const cors = require('cors');
-const fs = require('fs'); // أضفناه
-const authRoutes = require('./routes/auth');
-
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
+const SECRET = 'your-secret-key';
 
 app.use(cors());
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.json());
 
-// استخدام مسارات المصادقة
-app.use('/api/auth', authRoutes);
-
-// خدمة الصفحات الثابتة
-app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'login.html'));
-});
-
-app.get('/register', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'register.html'));
-});
-
-app.get('/feed', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'feed.html'));
-});
-
-// إعادة توجيه الجذر إلى تسجيل الدخول
-app.get('/', (req, res) => {
-  res.redirect('/login');
-});
-
-// 🔍 دالة مساعدة لقراءة قاعدة البيانات مع تسجيل ما يحدث
-function readDB() {
-  const dbPath = path.join(__dirname, 'database.json');
-  if (!fs.existsSync(dbPath)) {
-    console.log('⚠️ database.json غير موجود — جاري إنشاؤه...');
-    fs.writeFileSync(dbPath, JSON.stringify({ users: [] }, null, 2), 'utf8');
-  }
-  const data = fs.readFileSync(dbPath, 'utf8');
-  console.log('✅ قُرئت قاعدة البيانات من database.json');
-  return JSON.parse(data);
+// Load DB
+function loadDB() {
+  return JSON.parse(fs.readFileSync('db.json', 'utf8'));
 }
 
-// 🔒 دالة مساعدة لكتابة قاعدة البيانات مع تسجيل ما يحدث
-function writeDB(data) {
-  const dbPath = path.join(__dirname, 'database.json');
-  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf8');
-  console.log('💾 تمت كتابة البيانات إلى database.json');
-  console.log('📊 عدد المستخدمين الآن:', data.users.length);
+// Save DB
+function saveDB(db) {
+  fs.writeFileSync('db.json', JSON.stringify(db));
 }
 
-// API: جلب المشاركات (نحتفظ به كما هو)
-app.get('/api/posts', (req, res) => {
+// Register
+app.post('/register', (req, res) => {
+  const db = loadDB();
+  const { username, password } = req.body;
+  if (db.users.find(u => u.username === username)) return res.status(400).json({ msg: 'User exists' });
+  const hashed = bcrypt.hashSync(password, 8);
+  db.users.push({ id: db.users.length + 1, username, password: hashed });
+  saveDB(db);
+  res.json({ msg: 'Registered' });
+});
+
+// Login
+app.post('/login', (req, res) => {
+  const db = loadDB();
+  const { username, password } = req.body;
+  const user = db.users.find(u => u.username === username);
+  if (!user || !bcrypt.compareSync(password, user.password)) return res.status(400).json({ msg: 'Invalid credentials' });
+  const token = jwt.sign({ id: user.id }, SECRET, { expiresIn: '1h' });
+  res.json({ token });
+});
+
+// Middleware for auth
+function auth(req, res, next) {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ msg: 'No token' });
   try {
-    const db = readDB();
-    const posts = [];
-    db.users.forEach(u => {
-      u.posts.forEach(p => {
-        posts.push({
-          id: p.id,
-          userId: p.userId,
-          username: u.username,
-          content: p.content,
-          timestamp: p.timestamp
-        });
-      });
-    });
-    posts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-    console.log('✅ تم جلب', posts.length, 'منشور');
-    res.json(posts);
-  } catch (err) {
-    console.error('❌ فشل في جلب المشاركات:', err.message);
-    res.status(500).json({ error: 'خطأ داخلي في السيرفر' });
+    const decoded = jwt.verify(token, SECRET);
+    req.userId = decoded.id;
+    next();
+  } catch (e) {
+    res.status(401).json({ msg: 'Invalid token' });
   }
+}
+
+// Get posts (timeline)
+app.get('/posts', auth, (req, res) => {
+  const db = loadDB();
+  res.json(db.posts.sort((a, b) => b.id - a.id)); // Recent first
 });
 
-// API: نشر منشور (نحتفظ به — لكن نضيف auth لاحقًا)
-app.use('/api/posts', (req, res, next) => {
-  // هنا يمكن إضافة middleware للتحقق من الجلسة لاحقًا
-  next();
+// Create post
+app.post('/posts', auth, (req, res) => {
+  const db = loadDB();
+  const { content } = req.body;
+  const post = { id: db.posts.length + 1, userId: req.userId, content, likes: 0, comments: [] };
+  db.posts.push(post);
+  saveDB(db);
+  res.json(post);
 });
 
-app.post('/api/posts', (req, res) => {
-  try {
-    const { userId, content } = req.body;
-    const db = readDB();
-    const user = db.users.find(u => u.id === userId);
-    if (!user) {
-      console.log('❌ فشل النشر — المستخدم غير موجود:', userId);
-      return res.status(404).json({ error: 'مستخدم غير موجود' });
-    }
-    const post = {
-      id: user.posts.length ? Math.max(...user.posts.map(p => p.id)) + 1 : 1,
-      userId,
-      content: require('./utils/security').sanitizeInput(content),
-      timestamp: new Date().toISOString()
-    };
-    user.posts.push(post);
-    writeDB(db); // ← هنا سترى "💾 تمت كتابة..."
-    console.log('✅ تم نشر منشور جديد من:', user.username);
-    res.status(201).json(post);
-  } catch (err) {
-    console.error('❌ فشل في نشر المنشور:', err.message);
-    res.status(500).json({ error: 'خطأ داخلي في السيرفر' });
-  }
+// Like post
+app.post('/posts/:id/like', auth, (req, res) => {
+  const db = loadDB();
+  const post = db.posts.find(p => p.id == req.params.id);
+  if (!post) return res.status(404).json({ msg: 'Post not found' });
+  post.likes++;
+  saveDB(db);
+  res.json({ likes: post.likes });
 });
 
-app.listen(PORT, () => {
-  console.log(`✅ يعمل على http://localhost:${PORT}`);
+// Comment on post
+app.post('/posts/:id/comment', auth, (req, res) => {
+  const db = loadDB();
+  const post = db.posts.find(p => p.id == req.params.id);
+  if (!post) return res.status(404).json({ msg: 'Post not found' });
+  const { content } = req.body;
+  const comment = { id: db.comments.length + 1, postId: post.id, userId: req.userId, content };
+  db.comments.push(comment);
+  post.comments.push(comment.id);
+  saveDB(db);
+  res.json(comment);
 });
+
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
