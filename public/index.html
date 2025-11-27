@@ -1,0 +1,32 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>شبيه الفيسبوك</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <div id="auth" class="card">
+      <h2>شبيه الفيسبوك</h2>
+      <input type="text" id="username" placeholder="اسم المستخدم">
+      <input type="password" id="password" placeholder="كلمة المرور">
+      <button onclick="register()">تسجيل</button>
+      <button onclick="login()">دخول</button>
+    </div>
+
+    <div id="feed" class="hidden">
+      <div class="header">شبيه الفيسبوك</div>
+      <div class="card">
+        <textarea id="postContent" placeholder="ما الذي يدور في بالك؟"></textarea>
+        <button onclick="createPost()">نشر</button>
+      </div>
+      <div id="posts"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
