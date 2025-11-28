@@ -1,0 +1,52 @@
+{
+  "name": "nexus-social",
+  "version": "1.0.0",
+  "description": "منصة اجتماعية متكاملة مشابهة للفيسبوك",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
+    "client": "cd frontend && live-server --port=3000",
+    "build": "npm install && node backend/server.js",
+    "seed": "node database/seeds.js",
+    "docker:build": "docker build -t nexus-social .",
+    "docker:run": "docker run -p 5000:5000 nexus-social",
+    "docker:compose": "docker-compose up -d",
+    "docker:compose:dev": "docker-compose -f docker-compose.dev.yml up"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.5.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5",
+    "socket.io": "^4.7.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "helmet": "^7.0.0",
+    "express-rate-limit": "^6.10.0",
+    "validator": "^13.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "social",
+    "network",
+    "nodejs",
+    "express",
+    "mongodb",
+    "socket.io",
+    "facebook-clone"
+  ],
+  "author": "Nexus Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/nexus-social.git"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}
