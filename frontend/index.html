@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus - الشبكة الاجتماعية</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- الأنماط -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- شريط التنقل العلوي -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <!-- الجزء الأيسر -->
+            <div class="nav-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="logo">
+                    <i class="fas fa-users"></i>
+                    <span>Nexus</span>
+                </div>
+            </div>
+
+            <!-- الجزء الأوسط -->
+            <div class="nav-center">
+                <div class="search-bar">
+                    <input type="text" placeholder="ابحث في Nexus">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+
+            <!-- الجزء الأيمن -->
+            <div class="nav-right">
+                <div class="nav-icons">
+                    <a href="#" class="nav-icon active" data-tab="home" title="الصفحة الرئيسية">
+                        <i class="fas fa-home"></i>
+                    </a>
+                    <a href="#" class="nav-icon" data-tab="friends" title="الأصدقاء">
+                        <i class="fas fa-user-friends"></i>
+                    </a>
+                    <a href="#" class="nav-icon" data-tab="messages" title="الرسائل">
+                        <i class="fas fa-comment-dots"></i>
+                        <div class="notification-badge" id="messageBadge">3</div>
+                    </a>
+                    <a href="#" class="nav-icon" data-tab="notifications" title="الإشعارات">
+                        <i class="fas fa-bell"></i>
+                        <div class="notification-badge" id="notificationBadge">5</div>
+                    </a>
+                </div>
+
+                <!-- قائمة المستخدم -->
+                <div class="user-menu" id="userMenu">
+                    <div class="user-avatar" id="userAvatar">
+                        <span id="userInitials">م</span>
+                    </div>
+                    <span id="userName">محمد أحمد</span>
+                </div>
+
+                <!-- القائمة المنسدلة -->
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="#" class="dropdown-item" data-tab="profile">
+                        <i class="fas fa-user"></i>
+                        <span>الملف الشخصي</span>
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-cog"></i>
+                        <span>الإعدادات</span>
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-question-circle"></i>
+                        <span>المساعدة والدعم</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>تسجيل الخروج</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- المحتوى الرئيسي -->
+    <div class="main-container">
+        <!-- الشريط الجانبي الأيسر -->
+        <aside class="sidebar" id="sidebar">
+            <!-- الملف الشخصي -->
+            <div class="sidebar-section">
+                <a href="#" class="sidebar-item active" data-tab="profile">
+                    <div class="user-avatar">
+                        <span id="sidebarUserInitials">م</span>
+                    </div>
+                    <span id="sidebarName">محمد أحمد</span>
+                </a>
+                <a href="#" class="sidebar-item" data-tab="friends">
+                    <i class="fas fa-user-friends"></i>
+                    <span>الأصدقاء</span>
+                </a>
+                <a href="#" class="sidebar-item" data-tab="messages">
+                    <i class="fas fa-comment-dots"></i>
+                    <span>الرسائل</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                    <i class="fas fa-video"></i>
+                    <span>الفيديوهات</span>
+                </a>
+            </div>
+
+            <!-- الاختصارات -->
+            <div class="sidebar-section">
+                <h3>الاختصارات</h3>
+                <a href="#" class="sidebar-item">
+                    <i class="fas fa-code"></i>
+                    <span>مجموعة المطورين</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                    <i class="fas fa-palette"></i>
+                    <span>مصممي الويب</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                    <i class="fas fa-briefcase"></i>
+                    <span>وظائف التقنية</span>
+                </a>
+                <a href="#" class="sidebar-item see-more">
+                    <i class="fas fa-chevron-down"></i>
+                    <span>عرض المزيد</span>
+                </a>
+            </div>
+
+            <!-- المجموعات -->
+            <div class="sidebar-section">
+                <h3>المجموعات</h3>
+                <a href="#" class="sidebar-item">
+                    <i class="fab fa-js-square"></i>
+                    <span>مبرمجو JavaScript</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                    <i class="fab fa-react"></i>
+                    <span>مطورو React</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>مصممو UI/UX</span>
+                </a>
+                <a href="#" class="sidebar-item see-more">
+                    <i class="fas fa-chevron-down"></i>
+                    <span>عرض المزيد</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- المحتوى المركزي -->
+        <main class="main-content">
+            <!-- إنشاء منشور -->
+            <div class="create-post-card">
+                <div class="post-input">
+                    <div class="user-avatar">
+                        <span id="postUserInitials">م</span>
+                    </div>
+                    <input type="text" id="postContent" placeholder="ماذا يخطر ببالك، محمد؟">
+                </div>
+                <div class="post-actions">
+                    <button class="post-action-btn" data-type="photo">
+                        <i class="fas fa-image"></i>
+                        <span>صورة</span>
+                    </button>
+                    <button class="post-action-btn" data-type="video">
+                        <i class="fas fa-video"></i>
+                        <span>فيديو</span>
+                    </button>
+                    <button class="post-action-btn" data-type="feeling">
+                        <i class="fas fa-smile"></i>
+                        <span>نشاط</span>
+                    </button>
+                    <button class="post-submit-btn" id="submitPost">نشر</button>
+                </div>
+                <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+            </div>
+
+            <!-- قائمة المنشورات -->
+            <div class="posts-container" id="postsContainer">
+                <!-- سيتم تحميل المنشورات هنا عبر JavaScript -->
+                <div class="post-card text-center">
+                    <p>جاري تحميل المنشورات...</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- الشريط الجانبي الأيمن -->
+        <aside class="right-sidebar">
+            <!-- جهات الاتصال -->
+            <div class="sidebar-section">
+                <h3>جهات الاتصال</h3>
+                <div class="contacts-list" id="contactsList">
+                    <!-- سيتم تحميل جهات الاتصال هنا -->
+                </div>
+            </div>
+
+            <!-- الإشعارات -->
+            <div class="sidebar-section">
+                <h3>الإشعارات الحديثة</h3>
+                <div class="notifications-list" id="notificationsList">
+                    <!-- سيتم تحميل الإشعارات هنا -->
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- نافذة الدردشة -->
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <div class="chat-user">
+                <div class="user-avatar small" id="chatUserAvatar">
+                    <span>س</span>
+                </div>
+                <span id="chatUserName">سارة محمد</span>
+            </div>
+            <button class="chat-close" id="closeChat">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <!-- سيتم تحميل الرسائل هنا -->
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chatMessageInput" placeholder="اكتب رسالة...">
+            <button id="sendMessage">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- الملفات البرمجية -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/friends.js"></script>
+    
+    <script>
+        // تهيئة المكونات بعد تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            // تهيئة نظام الدردشة
+            chatManager.initialize();
+            
+            // تهيئة نظام الأصدقاء
+            friendsManager.initialize();
+        });
+    </script>
+</body>
+</html>
