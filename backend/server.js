@@ -33,7 +33,7 @@ app.use('/uploads', express.static('uploads'));
 app.use(express.static('frontend'));
 
 // MongoDB connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/nexus-social';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://gleccounts_db_user:<db_password>@socialcluster.hhajbzr.mongodb.net/?appName=SocialCluster';
 mongoose.connect(MONGODB_URI)
 .then(() => console.log('✅ Connected to MongoDB'))
 .catch(err => console.error('❌ MongoDB connection error:', err));
@@ -90,8 +90,6 @@ app.get('*', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-http.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📧 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🌐 Frontend: http://localhost:${PORT}`);
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
