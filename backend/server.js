@@ -39,12 +39,12 @@ mongoose.connect(MONGODB_URI)
 .catch(err => console.error('❌ MongoDB connection error:', err));
 
 // Import routes
-const authRoutes = require('./routes/auth');
-const userRoutes = require('./routes/users');
-const postRoutes = require('./routes/posts');
-const messageRoutes = require('./routes/messages');
-const friendRoutes = require('./routes/friends');
-const notificationRoutes = require('./routes/notifications');
+const authRoutes = require('/routes/auth');
+const userRoutes = require('/routes/users');
+const postRoutes = require('/routes/posts');
+const messageRoutes = require('/routes/messages');
+const friendRoutes = require('/routes/friends');
+const notificationRoutes = require('/routes/notifications');
 
 // Use routes
 app.use('/api/auth', authRoutes);
