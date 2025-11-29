@@ -1,7 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 const cors = require("cors");
-const authRoutes = require("backend/routes/auth");
+const authRoutes = require("/backend/routes/auth");
 
 const app = express();
 app.use(express.json());
