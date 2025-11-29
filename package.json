@@ -4,10 +4,10 @@
   "description": "منصة اجتماعية متكاملة مشابهة للفيسبوك",
   "main": "backend/server.js",
   "scripts": {
-    "start": "node backend/server.js",
-    "dev": "nodemon backend/server.js",
+    "start": "node server.js",
+    "dev": "nodemon server.js",
     "client": "cd frontend && live-server --port=3000",
-    "build": "npm install && node backend/server.js",
+    "build": "npm install && node server.js",
     "seed": "node database/seeds.js",
     "docker:build": "docker build -t nexus-social .",
     "docker:run": "docker run -p 5000:5000 nexus-social",
