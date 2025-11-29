@@ -1,21 +1,21 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  darkMode: 'class',
-  content: [
-    "./app/**/*.{js,jsx}",
-    "./components/**/*.{js,jsx}",
-  ],
-  theme: {
-    extend: {
-      colors: {
-        facebook: {
-          blue: '#1877f2',
-          dark: '#242526',
-          darker: '#18191a',
-          gray: '#e4e6eb',
-        }
-      }
-    },
+
+// next.config.mjs  ← ملف ES Module صالح 100% لـ Next.js 15
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  images: {
+    domains: ['res.cloudinary.com', 'i.pravatar.cc'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
   },
-  plugins: [],
-}
+  webpack(config) {
+    config.experiments = { ...config.experiments, topLevelAwait: true };
+    return config;
+  },
+};
+
+export default nextConfig;
