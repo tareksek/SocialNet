@@ -1,11 +1,9 @@
-// server.js - نسخة HTML صافي 100% + أمان عالي + دعم Cloudinary v2
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const multer = require('multer');
 const { v2: cloudinary } = require('cloudinary');
-const { CloudinaryStorage } = require('@fluidjs/multer-cloudinary'); // التغيير الوحيد هنا
 const { Low } = require('lowdb');
 const { JSONFile } = require('lowdb/node');
 const bcrypt = require('bcryptjs');
@@ -14,169 +12,153 @@ const helmet = require('helmet');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// ==================== قاعدة البيانات ====================
+// =============== قاعدة البيانات ===============
 const adapter = new JSONFile('database.json');
 const db = new Low(adapter);
 await db.read();
 db.data ||= { users: [], posts: [], comments: [], likes: [] };
 await db.write();
 
-// ==================== الأمان ====================
-app.use(helmet());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public')); // كل الـ HTML والـ CSS والـ JS من مجلد public
-
-// الجلسات الآمنة
-app.use(session({
-  store: new FileStore({ path: './sessions' }),
-  secret: process.env.SESSION_SECRET || 'change-this-in-production-123456',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { 
-    httpOnly: true, 
-    secure: false, // غيرها لـ true في الإنتاج مع HTTPS
-    sameSite: 'strict',
-    maxAge: 7 * 24 * 60 * 60 * 1000 
-  }
-}));
-
-// Cloudinary
+// =============== Cloudinary ===============
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: { 
-    folder: 'minibook', 
-    allowed_formats: ['jpg','png','jpeg','gif','webp'] 
-  }
-});
-const upload = multer({ storage });
+// رفع الصور مباشرة بـ multer + cloudinary (بدون أي حزمة خارجية)
+const upload = multer({ storage: multer.memoryStorage() });
 
-// Middleware: إرفاق المستخدم في كل طلب
-const attachUser = async (req, res, next) => {
+// =============== Middleware ===============
+app.use(helmet());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public')));
+
+app.use(session({
+  store: new FileStore({ path: './sessions', retries: 2 }),
+  secret: process.env.SESSION_SECRET || 'super-secret-key-change-in-production',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000
+  }
+}));
+
+// جلب المستخدم من الجلسة
+app.use(async (req, res, next) => {
   if (req.session.userId) {
     await db.read();
     req.user = db.data.users.find(u => u.id === req.session.userId);
   }
   next();
-};
-app.use(attachUser);
+}));
 
-// صفحات HTML
+// =============== رفع الصورة إلى Cloudinary يدوياً ===============
+const uploadToCloudinary = (buffer) => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.upload_stream(
+      { folder: 'minibook' },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result.secure_url);
+      }
+    );
+    }).end(buffer);
+  });
+};
+
+// =============== Routes ===============
+
 app.get('/', (req, res) => {
   if (!req.user) return res.redirect('/login.html');
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.get('/login.html', (req, res) => {
-  if (req.user) return res.redirect('/');
-  res.sendFile(path.join(__dirname, 'public', 'login.html'));
-});
+app.get('/login.html', (req, res) => req.user ? res.redirect('/') : res.sendFile(path.join(__dirname, 'public', 'login.html')));
+app.get('/register.html', (req, res) => req.user ? res.redirect('/') : res.sendFile(path.join(__dirname, 'public', 'register.html')));
 
-app.get('/register.html', (req, res) => {
-  if (req.user) return res.redirect('/');
-  res.sendFile(path.join(__dirname, 'public', 'register.html'));
-});
-
-// ==================== APIs (تستخدمها الـ JavaScript في الواجهة) ====================
-
-// تسجيل مستخدم جديد
+// API
 app.post('/api/register', async (req, res) => {
   const { fullName, email, password } = req.body;
   await db.read();
-
-  if (db.data.users.some(u => u.email === email)) {
-    return res.json({ success: false, message: "البريد مسجل مسبقًا" });
-  }
+  if (db.data.users.some(u => u.email === email)) 
+    return res.json({ success: false, message: "البريد مسجل مسبقاً" });
 
   const hashed = await bcrypt.hash(password, 12);
-  const newUser = {
-    id: uuidv4(),
-    fullName,
-    email,
-    password: hashed,
-    avatar: "https://res.cloudinary.com/dw0asfxtg/image/upload/v1738812345/default-avatar.png", // ضع رابط صورة افتراضية
-    createdAt: Date.now()
-  };
-
-  db.data.users.push(newUser);
+  const user = { id: uuidv4(), fullName, email, password: hashed, avatar: '/images/default-avatar.png', createdAt: Date.now() };
+  db.data.users.push(user);
   await db.write();
-
-  req.session.userId = newUser.id;
+  req.session.userId = user.id;
   res.json({ success: true, redirect: '/' });
 });
 
-// تسجيل الدخول
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   await db.read();
-
   const user = db.data.users.find(u => u.email === email);
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.json({ success: false, message: "بيانات الدخول غير صحيحة" });
-  }
+  if (!user || !(await bcrypt.compare(password, user.password))) 
+    return res.json({ success: false, message: "بيانات غير صحيحة" });
 
   req.session.userId = user.id;
   res.json({ success: true, redirect: '/' });
 });
 
-// تسجيل الخروج
 app.get('/api/logout', (req, res) => {
   req.session.destroy();
   res.json({ success: true, redirect: '/login.html' });
 });
 
-// جلب المنشورات (يستخدم في index.html)
 app.get('/api/posts', async (req, res) => {
-  if (!req.user) return res.status(401).json({ error: "غير مسجل دخول" });
-
+  if (!req.user) return res.status(401).json({ error: 'غيرجى تسجيل الدخول' });
   await db.read();
   const posts = db.data.posts
-    .map(post => {
-      const author = db.data.users.find(u => u.id === post.authorId) || { fullName: "محذوف", avatar: "/images/default.png" };
+    .map(p => {
+      const author = db.data.users.find(u => u.id === p.authorId) || { fullName: 'محذوف', avatar: '/images/default-avatar.png' };
       return {
-        ...post,
+        ...p,
         authorName: author.fullName,
         authorAvatar: author.avatar,
-        likesCount: db.data.likes.filter(l => l.postId === post.id).length,
-        isLiked: db.data.likes.some(l => l.postId === post.id && l.userId === req.user.id)
+        likesCount: db.data.likes.filter(l => l.postId === p.id).length,
+        isLiked: db.data.likes.some(l => l.postId === p.id && l.userId === req.user.id)
       };
     })
     .sort((a, b) => b.createdAt - a.createdAt);
-
   res.json(posts);
 });
 
-// إنشاء منشور جديد
 app.post('/api/post', upload.single('image'), async (req, res) => {
-  if (!req.user) return res.status(401).json({ error: "غير مسجل" });
+  if (!req.user) return res.status(401).json({ error: 'غير مسجل' });
+
+  let imageUrl = null;
+  if (req.file) {
+    try {
+      imageUrl = await uploadToCloudinary(req.file.buffer);
+    } catch (err) {
+      return res.status(500).json({ error: 'فشبكة رفع الصورة' });
+    }
+  }
 
   const { content } = req.body;
-  if (!content.trim() && !req.file) return res.redirect('/');
+  if (!content.trim() && !imageUrl) return res.status(400).json({ error: 'المنشور فارغ' });
 
-  const newPost = {
+  const post = {
     id: uuidv4(),
     authorId: req.user.id,
     content: content.trim(),
-    image: req.file ? req.file.path : null,
+    image: imageUrl,
     createdAt: Date.now()
   };
 
   await db.read();
-  db.data.posts.push(newPost);
+  db.data.posts.push(post);
   await db.write();
-
-  res.json({ success: true, post: newPost });
+  res.json({ success: true, post });
 });
 
-app.listen(PORT, () => {
-  console.log(`MiniBook يعمل الآن على http://localhost:${PORT}`);
-  console.log(`افتح المتصفح وجرب: http://localhost:3000/login.html`);
-});
+app.listen(PORT, () => console.log(`MiniBook running on port ${PORT}`));
