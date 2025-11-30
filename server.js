@@ -241,5 +241,5 @@ app.post('/api/post', upload.single('image'), async (req, res) => {
 // ==================== بدء الخادم ====================
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`MiniBook يعمل الآن على المنفذ ${PORT}`);
-  console.log(`افتح: https://your-app.onrender.com`);
+  console.log(`افتح: https://https://socialnet-l0xu.onrender.com`);
 });
