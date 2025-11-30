@@ -66,7 +66,10 @@ app.post('/register', async (req, res) => {
     res.json({ message: 'Registered' });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
-  }
+  } catch(err => {
+  console.error('Connection error:', err);
+  showError('خطأ في الاتصال: ' + err.message);
+});
 });
 
 app.post('/login', async (req, res) => {
@@ -79,7 +82,10 @@ app.post('/login', async (req, res) => {
     res.json({ token });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
-  }
+  } catch(err => {
+  console.error('Connection error:', err);
+  showError('خطأ في الاتصال: ' + err.message);
+});
 });
 
 // باقي الروتات دون تغيير (أضف try-catch مشابه إذا لزم للروتات الأخرى)
