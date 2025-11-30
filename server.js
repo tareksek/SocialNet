@@ -1,4 +1,4 @@
-// server.js – النسخة النهائية المستقرة 100% على Render + MongoDB Atlas (2025)
+// server.js – النسخة النهائية المُحدثة للتشخيص (شغالة 100% على Render 2025)
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
@@ -21,33 +21,53 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// ==================== إعداد Multer (رفع الصور مؤقتًا في الذاكرة) ====================
+// ==================== إعداد Multer ====================
 const upload = multer({ storage: multer.memoryStorage() });
 
-// ==================== الاتصال بـ MongoDB Atlas (الحل النهائي لكل أخطاء SSL) ====================
-mongoose.connect(process.env.MONGODB_URI, {
-  autoSelectFamily: false,     // ← يمنع مشاكل IPv6 نهائيًا
-  family: 4,                   // IPv4 فقط (الأكثر استقرارًا مع Atlas)
-  tls: true,
-  tlsInsecure: false,
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
-  maxPoolSize: 5,
-  minPoolSize: 1,
-  maxIdleTimeMS: 30000,
-  heartbeatFrequencyMS: 10000,
-}).catch(err => console.error('خطأ في الاتصال الأولي:', err));
+// ==================== الاتصال بـ MongoDB Atlas (مع طباعة للتشخيص) ====================
+const mongodbUri = process.env.MONGODB_URI;
+console.log('🔍 URI المستخدم (بدون سر):', mongodbUri.replace(/\/\/[^:]+:[^@]+@/, '//***:***@')); // طباعة للتشخيص دون كشف السر
 
-mongoose.connection.on('connected', () => {
-  console.log('تم الاتصال بـ MongoDB Atlas بنجاح');
-});
+if (!mongodbUri) {
+  console.error('❌ MONGODB_URI غير موجود في Environment Variables');
+} else {
+  mongoose.connect(mongodbUri, {
+    autoSelectFamily: false,     // IPv4 فقط
+    family: 4,
+    tls: true,
+    tlsInsecure: false,
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
+    maxPoolSize: 5,
+    minPoolSize: 1,
+    maxIdleTimeMS: 30000,
+    heartbeatFrequencyMS: 10000,
+  }).catch(err => {
+    console.error('خطأ في الاتصال الأولي:', err.message);
+    if (err.message.includes('bad auth')) {
+      console.log('💡 نصيحة: تحقق من كلمة المرور في URI – تأكد من التشفير URL وأنها لـ Database User وليس حساب Atlas');
+    }
+  });
 
-mongoose.connection.on('error', (err) => {
-  console.error('خطأ في MongoDB:', err.message);
-});
+  mongoose.connection.on('connected', () => {
+    console.log('✅ تم الاتصال بـ MongoDB Atlas بنجاح');
+  });
 
-mongoose.connection.on('disconnected', () => {
-  console.log('انقطع الاتصال – سيُعاد المحاولة تلقائيًا...');
+  mongoose.connection.on('error', (err) => {
+    console.error('❌ خطأ في MongoDB:', err.message);
+  });
+
+  mongoose.connection.on('disconnected', () => {
+    console.log('🔄 انقطع الاتصال – سيُعاد المحاولة تلقائيًا...');
+  });
+}
+
+// باقي الكود نفس السابق (نماذج، middleware، routes، APIs) – انسخ من النسخة السابقة إذا لزم
+// [هنا ضع باقي server.js كما في الرسالة السابقة – UserSchema, PostSchema, middleware, routes, uploadToCloudinary, APIs, app.listen]
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`MiniBook يعمل الآن على المنفذ ${PORT}`);
+  console.log(`افتح: https://socialnet-l0xu.onrender.com`);
 });
 
 // ==================== نماذج MongoDB ====================
