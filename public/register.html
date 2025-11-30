@@ -1,21 +1,26 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>منصة اجتماعية - تسجيل جديد</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>إنشاء حساب - MiniBook</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
-<body>
-  <div class="container login-container">
-    <h1>تسجيل مستخدم جديد</h1>
-    <input id="username" placeholder="اسم المستخدم" required>
-    <input id="password" type="password" placeholder="كلمة المرور" required>
-    <input id="confirm-password" type="password" placeholder="تأكيد كلمة المرور" required>
-    <button onclick="register()">تسجيل</button>
-    <p id="error-message" class="error"></p>
-    <a href="index.html">عودة إلى تسجيل الدخول</a>
+<body class="auth-body">
+  <div class="auth-card">
+    <h1>إنشاء حساب جديد</h1>
+    <form id="registerForm">
+      <input type="text" name="fullName" placeholder="الاسم الكامل" required />
+      <input type="email" name="email" placeholder="البريد الإلكتروني" required />
+      <input type="password" name="password" placeholder="كلمة المرور" required />
+      <input type="password" name="confirmPassword" placeholder="تأكيد كلمة المرور" required />
+      <button type="submit">إنشاء الحساب</button>
+      <p id="error" class="error"></p>
+      <p>لديك حساب؟ <a href="/login.html">تسجيل الدخول</a></p>
+    </form>
   </div>
-  <script src="script.js"></script>
+
+  <script src="/js/main.js"></script>
 </body>
 </html>
