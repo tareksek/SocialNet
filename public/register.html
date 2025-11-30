@@ -1,26 +1,142 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>إنشاء حساب - MiniBook</title>
-  <link rel="stylesheet" href="/css/style.css" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>إنشاء حساب - Connectly</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="auth-body">
-  <div class="auth-card">
-    <h1>إنشاء حساب جديد</h1>
-    <form id="registerForm">
-      <input type="text" name="fullName" placeholder="الاسم الكامل" required />
-      <input type="email" name="email" placeholder="البريد الإلكتروني" required />
-      <input type="password" name="password" placeholder="كلمة المرور" required />
-      <input type="password" name="confirmPassword" placeholder="تأكيد كلمة المرور" required />
-      <button type="submit">إنشاء الحساب</button>
-      <p id="error" class="error"></p>
-      <p>لديك حساب؟ <a href="/login.html">تسجيل الدخول</a></p>
-    </form>
-  </div>
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1><i class="fas fa-user-plus"></i> إنشاء حساب</h1>
+            <p>انضم إلى مجتمع Connectly اليوم</p>
+        </div>
+        
+        <form id="registerForm">
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="registerName" placeholder="الاسم الكامل" required>
+            </div>
+            
+            <div class="input-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="registerEmail" placeholder="البريد الإلكتروني" required>
+            </div>
+            
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="registerPassword" placeholder="كلمة المرور" required minlength="6">
+            </div>
+            
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="registerConfirm" placeholder="تأكيد كلمة المرور" required minlength="6">
+            </div>
+            
+            <button type="submit" class="auth-btn">
+                <i class="fas fa-user-plus"></i>
+                إنشاء حساب
+            </button>
+            
+            <div class="auth-links">
+                <p>لديك حساب بالفعل؟ 
+                    <a href="/login.html" class="login-link">
+                        <i class="fas fa-sign-in-alt"></i>
+                        تسجيل الدخول
+                    </a>
+                </p>
+            </div>
+        </form>
+    </div>
 
-  <script src="/js/main.js"></script>
+    <script src="/js/main.js"></script>
+
+    <style>
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .auth-header h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .auth-header p {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+        
+        .input-group {
+            position: relative;
+            margin-bottom: 16px;
+        }
+        
+        .input-group i {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 14px 45px 14px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.1);
+        }
+        
+        .auth-btn {
+            width: 100%;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .auth-btn:hover {
+            background: #36a420;
+        }
+        
+        .auth-links {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .login-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .login-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </body>
 </html>
