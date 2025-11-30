@@ -14,7 +14,11 @@ function login() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password })
-  }).then(res => res.json()).then(data => {
+  } catch(err => {
+  console.error('Connection error:', err);
+  showError('خطأ في الاتصال: ' + err.message);
+});
+       ).then(res => res.json()).then(data => {
     if (data.token) {
       token = data.token;
       localStorage.setItem('token', token);
@@ -35,7 +39,11 @@ function register() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password })
-  }).then(res => res.json()).then(data => {
+  } catch(err => {
+  console.error('Connection error:', err);
+  showError('خطأ في الاتصال: ' + err.message);
+});
+       ).then(res => res.json()).then(data => {
     if (data.message) {
       alert('تم التسجيل بنجاح');
       window.location.href = 'index.html';
