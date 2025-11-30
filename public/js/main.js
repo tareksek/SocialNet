@@ -9,7 +9,7 @@ async function loadPosts() {
   try {
     const res = await fetch('/api/posts');
     if (res.status === 401) {
-      location.href = '/login.html';
+      location.href = '/index.html';
       return;
     }
     const posts = await res.json();
