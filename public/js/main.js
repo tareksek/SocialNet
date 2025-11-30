@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const data = await res.json();
       if (data.success) {
-        window.location.href = '/';
+        window.location.href = '/index.html;
       } else {
         alert(data.message || 'بيانات الدخول غير صحيحة');
       }
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const data = await res.json();
       if (data.success) {
-        window.location.href = '/';
+        window.location.href = '/index.html;
       } else {
         alert(data.message || 'فشل إنشاء الحساب');
       }
