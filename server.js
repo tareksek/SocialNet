@@ -1,11 +1,11 @@
-// server.js - نسخة HTML صافي 100% + أمان عالي
+// server.js - نسخة HTML صافي 100% + أمان عالي + دعم Cloudinary v2
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const multer = require('multer');
 const { v2: cloudinary } = require('cloudinary');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const { CloudinaryStorage } = require('@fluidjs/multer-cloudinary'); // التغيير الوحيد هنا
 const { Low } = require('lowdb');
 const { JSONFile } = require('lowdb/node');
 const bcrypt = require('bcryptjs');
@@ -52,9 +52,12 @@ cloudinary.config({
 
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: { folder: 'minibook', allowed_formats: ['jpg','png','jpeg','gif','webp'] }
+  params: { 
+    folder: 'minibook', 
+    allowed_formats: ['jpg','png','jpeg','gif','webp'] 
+  }
 });
-const upload = multer({ storage ? multer({ storage }) : multer({ dest: 'uploads/' });
+const upload = multer({ storage });
 
 // Middleware: إرفاق المستخدم في كل طلب
 const attachUser = async (req, res, next) => {
