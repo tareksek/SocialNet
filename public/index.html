@@ -1,18 +1,19 @@
 
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>منصة اجتماعية</title>
+  <title>منصة اجتماعية - تسجيل الدخول</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
+  <div class="container login-container">
     <h1>تسجيل الدخول</h1>
-    <input id="username" placeholder="اسم المستخدم">
-    <input id="password" type="password" placeholder="كلمة المرور">
+    <input id="username" placeholder="اسم المستخدم" required>
+    <input id="password" type="password" placeholder="كلمة المرور" required>
     <button onclick="login()">دخول</button>
-    <a href="register.html">تسجيل جديد</a>
+    <p id="error-message" class="error"></p>
+    <a href="register.html">ليس لديك حساب؟ تسجيل جديد</a>
   </div>
   <script src="script.js"></script>
 </body>
