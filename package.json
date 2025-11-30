@@ -1,14 +1,10 @@
 {
   "name": "minibook",
-  "version": "1.0.0",
+  "version": "1.0.0.0",
   "main": "server.js",
   "type": "commonjs",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "engines": {
-    "node": ">=20.x"
-  },
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=20.x" },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.5.0",
@@ -16,8 +12,8 @@
     "express": "^4.21.0",
     "express-session": "^1.18.0",
     "helmet": "^8.0.0",
-    "lowdb": "^7.0.1",
     "multer": "^1.4.5-lts.1",
+    "node-fetch": "^3.3.2",
     "session-file-store": "^1.5.0",
     "uuid": "^10.0.0"
   }
