@@ -1,6 +1,7 @@
-
 {
   "users": [],
   "posts": [],
-  "groups": []
+  "comments": [],
+  "likes": [],
+  "nextId": 1
 }
