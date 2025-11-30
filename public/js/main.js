@@ -1,98 +1,138 @@
-// دالة مساعدة للـ fetch
-const api = async (url, options = {}) => {
-  const res = await fetch(url, {
-    headers: { "Content-Type": "application/json" },
-    ...options
-  });
-  return res.json();
-};
+// public/js/main.js – النسخة النهائية الكاملة (تسجيل دخول + إنشاء حساب + منشورات + بدون refresh)
 
-// تسجيل الدخول والتسجيل
-if (document.getElementById('loginForm')) {
-  document.getElementById('loginForm').onsubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData);
-    const res = await api('/api/login', {
-      method: 'POST',
-      body: JSON.stringify(data)
+const postsContainer = document.getElementById('postsContainer');
+const postForm = document.getElementById('postForm');
+const postContent = document.getElementById('postContent');
+const postImage = document.getElementById('postImage');
+const usernameSpan = document.getElementById('username');
+const logoutBtn = document.getElementById('logout');
+
+// ==================== تسجيل الدخول وإنشاء حساب (بدون refresh) ====================
+document.addEventListener('DOMContentLoaded', () => {
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+
+  if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        window.location.href = '/';
+      } else {
+        alert(data.message || 'بيانات الدخول غير صحيحة');
+      }
     });
-    if (res.success) location.href = res.redirect;
-    else document.getElementById('error').textContent = res.message;
-  };
-}
+  }
 
-if (document.getElementById('registerForm')) {
-  document.getElementById('registerForm').onsubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData);
-    if (data.password !== data.confirmPassword) {
-      document.getElementById('error').textContent = "كلمتا المرور غير متطابقتين";
+  if (registerForm) {
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fullName = document.getElementById('registerName').value.trim();
+      const email = document.getElementById('registerEmail').value.trim();
+      const password = document.getElementById('registerPassword').value;
+      const confirmPassword = document.getElementById('registerConfirm').value;
+
+      if (password !== confirmPassword) {
+        return alert('كلمتا المرور غير متطابقتين');
+      }
+
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fullName, email, password })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        window.location.href = '/';
+      } else {
+        alert(data.message || 'فشل إنشاء الحساب');
+      }
+    });
+  }
+
+  // ==================== تحميل المنشورات (إذا كنا في الصفحة الرئيسية) ====================
+  if (postsContainer) {
+    loadPosts();
+  }
+
+  // ==================== إنشاء منشور جديد ====================
+  if (postForm) {
+    postForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const content = postContent.value.trim();
+      const image = postImage.files[0];
+
+      if (!content && !image) return alert('اكتب شيئًا أو ارفع صورة');
+
+      const formData = new FormData();
+      if (content) formData.append('content', content);
+      if (image) formData.append('image', image);
+
+      const res = await fetch('/api/post', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        postForm.reset();
+        loadPosts(); // تحديث يدوي بعد النشر
+      } else {
+        alert('فشل إنشاء المنشور');
+      }
+    });
+  }
+
+  // ==================== تسجيل الخروج ====================
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+      await fetch('/api/logout');
+      window.location.href = '/login.html';
+    });
+  }
+});
+
+// ==================== جلب وعرض المنشورات ====================
+async function loadPosts() {
+  try {
+    const res = await fetch('/api/posts');
+    if (res.status === 401) {
+      window.location.href = '/login.html';
       return;
     }
-    const res = await api('/api/register', {
-      method: 'POST',
-      body: JSON.stringify(data)
-    });
-    if (res.success) location.href = res.redirect;
-    else document.getElementById('error').textContent = res.message;
-  };
-}
+    const posts = await res.json();
 
-// الصفحة الرئيسية
-if (document.getElementById('postsContainer')) {
-  const postsContainer = document.getElementById('postsContainer');
-  const usernameSpan = document.getElementById('username');
+    if (usernameSpan && posts.length > 0) {
+      usernameSpan.textContent = posts[0].authorName || 'مستخدم';
+    }
 
-  // جلب اسم المستخدم
-  fetch('/api/posts').then(r => r.json()).then(posts => {
-    if (posts.error) location.href = '/index.html';
-    usernameSpan.textContent = posts[0] ? posts[0].authorName : 'مستخدم';
-  });
-
-  // جلب المنشورات
-  const loadPosts = async () => {
-    const posts = await api('/api/posts');
     postsContainer.innerHTML = posts.map(post => `
       <div class="card post">
         <div class="post-header">
-          <img src="${post.authorAvatar}" class="avatar">
+          <img src="${post.authorAvatar}" class="avatar" alt="avatar">
           <div>
             <h3>${post.authorName}</h3>
             <small>${new Date(post.createdAt).toLocaleString('ar-EG')}</small>
           </div>
         </div>
-        <p>${post.content}</p>
-        ${post.image ? `<img src="${post.image}" class="post-image">` : ''}
+        <p>${post.content.replace(/\n/g, '<br>')}</p>
+        ${post.image ? `<img src="${post.image}" class="post-image" alt="صورة">` : ''}
         <div class="post-footer">
-          <button class="like-btn ${post.isLiked ? 'liked' : ''}">
-            إعجاب (${post.likesCount || 0})
-          </button>
+          <button class="like-btn">إعجاب (0)</button>
         </div>
       </div>
     `).join('');
-  };
-
-  // إنشاء منشور
-  document.getElementById('postForm').onsubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append('content', document.getElementById('postContent').value);
-    const image = document.getElementById('postImage').files[0];
-    if (image) formData.append('image', image);
-
-    await fetch('/api/post', { method: 'POST', body: formData });
-    document.getElementById('postForm').reset();
-    loadPosts();
-  };
-
-  // تسجيل الخروج
-  document.getElementById('logout').onclick = async (e) => {
-    e.preventDefault();
-    await api('/api/logout');
-    location.href = '/login.html';
-  };
-
-  loadPosts();
+  } catch (err) {
+    console.error('خطأ في تحميل المنشورات:', err);
+  }
 }
