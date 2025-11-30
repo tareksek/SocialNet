@@ -1,40 +1,865 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MiniBook</title>
-  <link rel="stylesheet" href="/css/style.css" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Connectly - الصفحة الرئيسية</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-  <header>
-    <div class="container">
-      <h1>MiniBook</h1>
-      <div class="user-info">
-        <span id="username"></span>
-        <a href="#" id="logout">تسجيل الخروج</a>
-      </div>
-    </div>
-  </header>
-
-  <div class="container feed">
-    <div class="card create-post">
-      <form id="postForm" enctype="multipart/form-data">
-        <textarea id="postContent" placeholder="ماذا يدور في بالك؟" required></textarea>
-        <div class="post-actions">
-          <label class="photo-btn">
-            <input type="file" id="postImage" name="image" accept="image/*" />
-            <i class="fas fa-image"></i> صورة
-          </label>
-          <button type="submit">نشر</button>
+    <!-- شريط التنقل العلوي المتكامل -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <!-- الشعار -->
+            <div class="nav-brand">
+                <a href="/" class="brand-link">
+                    <i class="fas fa-users"></i>
+                    <span>Connectly</span>
+                </a>
+            </div>
+            
+            <!-- شريط البحث -->
+            <div class="nav-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="ابحث في Connectly..." id="searchInput">
+            </div>
+            
+            <!-- قائمة التنقل الرئيسية -->
+            <div class="nav-main">
+                <a href="/" class="nav-item active" title="الصفحة الرئيسية">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="/friends.html" class="nav-item" title="الأصدقاء">
+                    <i class="fas fa-user-friends"></i>
+                </a>
+                <a href="/messages.html" class="nav-item" title="الرسائل">
+                    <i class="fas fa-comments"></i>
+                </a>
+                <a href="/videos.html" class="nav-item" title="الفيديوهات">
+                    <i class="fas fa-video"></i>
+                </a>
+                <a href="/groups.html" class="nav-item" title="المجموعات">
+                    <i class="fas fa-users"></i>
+                </a>
+            </div>
+            
+            <!-- منطقة المستخدم -->
+            <div class="nav-user">
+                <!-- الإشعارات -->
+                <div class="nav-notifications">
+                    <button class="nav-icon-btn" title="الإشعارات">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                </div>
+                
+                <!-- الرسائل -->
+                <div class="nav-messages">
+                    <button class="nav-icon-btn" title="الرسائل">
+                        <i class="fas fa-envelope"></i>
+                        <span class="message-badge">5</span>
+                    </button>
+                </div>
+                
+                <!-- الملف الشخصي -->
+                <div class="nav-profile">
+                    <div class="profile-dropdown">
+                        <button class="profile-btn">
+                            <img src="/images/default-avatar.png" alt="الصورة الشخصية" class="avatar">
+                            <span id="username">مستخدم</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="/profile.html" class="dropdown-item">
+                                <i class="fas fa-user"></i>
+                                الملف الشخصي
+                            </a>
+                            <a href="/settings.html" class="dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                الإعدادات
+                            </a>
+                            <a href="/help.html" class="dropdown-item">
+                                <i class="fas fa-question-circle"></i>
+                                المساعدة
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <button class="dropdown-item logout-btn" id="logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                                تسجيل الخروج
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </form>
+    </nav>
+
+    <!-- المحتوى الرئيسي -->
+    <div class="container">
+        <!-- الشريط الجانبي الأيسر -->
+        <div class="sidebar-left">
+            <!-- الملف الشخصي السريع -->
+            <div class="profile-card card">
+                <div class="profile-header">
+                    <img src="/images/default-avatar.png" alt="الصورة الشخصية" class="profile-avatar">
+                    <div class="profile-info">
+                        <h3 id="sidebarUsername">مستخدم Connectly</h3>
+                        <span class="profile-bio">مرحباً بك في Connectly!</span>
+                    </div>
+                </div>
+                <div class="profile-stats">
+                    <div class="stat">
+                        <strong>125</strong>
+                        <span>صديق</span>
+                    </div>
+                    <div class="stat">
+                        <strong>45</strong>
+                        <span>منشور</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- قائمة التنقل السريع -->
+            <div class="quick-links card">
+                <a href="/profile.html" class="quick-link">
+                    <i class="fas fa-user"></i>
+                    <span>ملفي الشخصي</span>
+                </a>
+                <a href="/friends.html" class="quick-link">
+                    <i class="fas fa-user-friends"></i>
+                    <span>الأصدقاء</span>
+                </a>
+                <a href="/photos.html" class="quick-link">
+                    <i class="fas fa-images"></i>
+                    <span>الصور</span>
+                </a>
+                <a href="/videos.html" class="quick-link">
+                    <i class="fas fa-video"></i>
+                    <span>الفيديوهات</span>
+                </a>
+                <a href="/groups.html" class="quick-link">
+                    <i class="fas fa-users"></i>
+                    <span>المجموعات</span>
+                </a>
+                <a href="/events.html" class="quick-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>الفعاليات</span>
+                </a>
+                <a href="/memories.html" class="quick-link">
+                    <i class="fas fa-history"></i>
+                    <span>الذكريات</span>
+                </a>
+                <a href="/saved.html" class="quick-link">
+                    <i class="fas fa-bookmark"></i>
+                    <span>المحفوظات</span>
+                </a>
+            </div>
+
+            <!-- جهات الاتصال -->
+            <div class="contacts-card card">
+                <div class="contacts-header">
+                    <h3>جهات الاتصال</h3>
+                    <div class="contact-actions">
+                        <button class="icon-btn" title="بحث">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <button class="icon-btn" title="خيارات">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="contacts-list">
+                    <div class="contact online">
+                        <img src="/images/default-avatar.png" alt="صديق" class="avatar">
+                        <span>أحمد محمد</span>
+                        <div class="online-indicator"></div>
+                    </div>
+                    <div class="contact online">
+                        <img src="/images/default-avatar.png" alt="صديق" class="avatar">
+                        <span>فاطمة عبدالله</span>
+                        <div class="online-indicator"></div>
+                    </div>
+                    <div class="contact">
+                        <img src="/images/default-avatar.png" alt="صديق" class="avatar">
+                        <span>خالد إبراهيم</span>
+                    </div>
+                    <div class="contact online">
+                        <img src="/images/default-avatar.png" alt="صديق" class="avatar">
+                        <span>سارة أحمد</span>
+                        <div class="online-indicator"></div>
+                    </div>
+                    <div class="contact">
+                        <img src="/images/default-avatar.png" alt="صديق" class="avatar">
+                        <span>محمد علي</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- المحتوى الرئيسي -->
+        <div class="main-content">
+            <!-- بطاقة إنشاء المنشور -->
+            <div class="create-post-card card">
+                <div class="post-form-header">
+                    <img src="/images/default-avatar.png" alt="صورتك" class="avatar">
+                    <input type="text" placeholder="ماذا يدور في ذهنك، أيها المستخدم؟" 
+                           onclick="document.getElementById('postModal').style.display='block'">
+                </div>
+                
+                <div class="post-options">
+                    <button class="post-option-btn" onclick="document.getElementById('postModal').style.display='block'">
+                        <i class="fas fa-video" style="color: #f5533d;"></i>
+                        <span>فيديو مباشر</span>
+                    </button>
+                    <button class="post-option-btn" onclick="document.getElementById('postModal').style.display='block'">
+                        <i class="fas fa-image" style="color: #45bd62;"></i>
+                        <span>صورة</span>
+                    </button>
+                    <button class="post-option-btn" onclick="document.getElementById('postModal').style.display='block'">
+                        <i class="far fa-laugh-wink" style="color: #f7b928;"></i>
+                        <span>شعور/نشاط</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- مودال إنشاء المنشور -->
+            <div id="postModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>إنشاء منشور</h2>
+                        <button class="close-btn" onclick="document.getElementById('postModal').style.display='none'">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <form id="postForm" class="modal-body">
+                        <div class="post-author">
+                            <img src="/images/default-avatar.png" alt="صورتك" class="avatar">
+                            <div>
+                                <strong id="modalUsername">مستخدم Connectly</strong>
+                                <select class="privacy-select">
+                                    <option value="public">🌐 عام</option>
+                                    <option value="friends">👥 الأصدقاء فقط</option>
+                                    <option value="private">🔒 خاص</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <textarea id="postContentText" placeholder="ماذا يدور في ذهنك؟" rows="5"></textarea>
+                        
+                        <div id="imagePreview" class="image-preview-container"></div>
+                        
+                        <div class="post-actions-modal">
+                            <div class="action-buttons">
+                                <label class="file-upload-btn">
+                                    <input type="file" id="postImage" accept="image/*" hidden>
+                                    <i class="fas fa-image"></i> صورة
+                                </label>
+                                <button type="button" class="file-upload-btn">
+                                    <i class="fas fa-user-tag"></i> تاغ
+                                </button>
+                                <button type="button" class="file-upload-btn">
+                                    <i class="far fa-laugh-wink"></i> شعور
+                                </button>
+                                <button type="button" class="file-upload-btn">
+                                    <i class="fas fa-map-marker-alt"></i> موقع
+                                </button>
+                            </div>
+                            
+                            <div class="modal-buttons">
+                                <button type="button" class="btn-secondary" 
+                                        onclick="document.getElementById('postModal').style.display='none'">
+                                    إلغاء
+                                </button>
+                                <button type="submit" class="btn-primary">نشر</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- حاوية المنشورات -->
+            <div id="postsContainer" class="posts-container">
+                <!-- سيتم تحميل المنشورات هنا ديناميكياً -->
+            </div>
+
+            <!-- مؤشر التحميل -->
+            <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+                <div class="spinner"></div>
+                <p>جاري تحميل المزيد من المنشورات...</p>
+            </div>
+        </div>
+
+        <!-- الشريط الجانبي الأيمن -->
+        <div class="sidebar-right">
+            <!-- إعلانات -->
+            <div class="ads-card card">
+                <h3>الإعلانات</h3>
+                <div class="ad-item">
+                    <img src="/images/ad-placeholder.jpg" alt="إعلان" class="ad-image">
+                    <div class="ad-content">
+                        <strong>عرض خاص!</strong>
+                        <p>احصل على خصم 20% على أول طلب</p>
+                    </div>
+                </div>
+                <div class="ad-item">
+                    <img src="/images/ad-placeholder.jpg" alt="إعلان" class="ad-image">
+                    <div class="ad-content">
+                        <strong>تطبيق الجوال</strong>
+                        <p>حمل تطبيق Connectly الآن</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- أحداث -->
+            <div class="events-card card">
+                <div class="events-header">
+                    <h3>الأحداث القادمة</h3>
+                    <a href="/events.html" class="see-all">عرض الكل</a>
+                </div>
+                <div class="events-list">
+                    <div class="event-item">
+                        <div class="event-date">
+                            <span class="day">15</span>
+                            <span class="month">ديسمبر</span>
+                        </div>
+                        <div class="event-info">
+                            <strong>حفلة نهاية العام</strong>
+                            <span>8:00 مساءً</span>
+                        </div>
+                    </div>
+                    <div class="event-item">
+                        <div class="event-date">
+                            <span class="day">20</span>
+                            <span class="month">ديسمبر</span>
+                        </div>
+                        <div class="event-info">
+                            <strong>ندوة تقنية</strong>
+                            <span>10:00 صباحاً</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- مجموعات قد تعجبك -->
+            <div class="groups-card card">
+                <div class="groups-header">
+                    <h3>مجموعات قد تعجبك</h3>
+                    <a href="/groups.html" class="see-all">عرض الكل</a>
+                </div>
+                <div class="groups-list">
+                    <div class="group-item">
+                        <img src="/images/group-placeholder.jpg" alt="مجموعة" class="group-avatar">
+                        <div class="group-info">
+                            <strong>مطوري الويب</strong>
+                            <span>25K عضو</span>
+                        </div>
+                        <button class="join-btn">انضم</button>
+                    </div>
+                    <div class="group-item">
+                        <img src="/images/group-placeholder.jpg" alt="مجموعة" class="group-avatar">
+                        <div class="group-info">
+                            <strong>محبي السفر</strong>
+                            <span>15K عضو</span>
+                        </div>
+                        <button class="join-btn">انضم</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="postsContainer"></div>
-  </div>
+    <!-- الـ Scripts -->
+    <script src="/js/main.js"></script>
 
-  <script src="/js/main.js"></script>
+    <!-- أنماط إضافية -->
+    <style>
+        /* شريط التنقل المحسن */
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            height: 56px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .brand-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--primary-color);
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav-search {
+            display: flex;
+            align-items: center;
+            background: var(--bg-color);
+            border-radius: 20px;
+            padding: 8px 12px;
+            flex: 0 1 400px;
+            gap: 8px;
+        }
+
+        .nav-search input {
+            background: none;
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .nav-main {
+            display: flex;
+            gap: 8px;
+            flex: 1;
+            justify-content: center;
+            max-width: 400px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -17px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        .nav-item:hover {
+            background: var(--hover-color);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-icon-btn {
+            position: relative;
+            background: var(--bg-color);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: background 0.3s;
+        }
+
+        .nav-icon-btn:hover {
+            background: var(--hover-color);
+        }
+
+        .notification-badge, .message-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: bold;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .profile-btn:hover {
+            background: var(--hover-color);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 8px 0;
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .profile-dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: background 0.3s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .dropdown-item:hover {
+            background: var(--hover-color);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 8px 0;
+        }
+
+        /* بطاقة الملف الشخصي */
+        .profile-card {
+            padding: 16px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-info h3 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .profile-bio {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 16px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+        }
+
+        .stat {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 18px;
+            color: var(--primary-color);
+        }
+
+        .stat span {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* الروابط السريعة */
+        .quick-links {
+            padding: 8px 0;
+        }
+
+        .quick-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: background 0.3s;
+            border-radius: 6px;
+            margin: 0 8px;
+        }
+
+        .quick-link:hover {
+            background: var(--hover-color);
+        }
+
+        .quick-link i {
+            width: 20px;
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        /* جهات الاتصال */
+        .contacts-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .contacts-header h3 {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        .contact-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .icon-btn:hover {
+            background: var(--hover-color);
+        }
+
+        .contact {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+            position: relative;
+        }
+
+        .contact:hover {
+            background: var(--hover-color);
+        }
+
+        .online-indicator {
+            width: 8px;
+            height: 8px;
+            background: var(--success-color);
+            border-radius: 50%;
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 2px solid white;
+        }
+
+        /* الإعلانات والأحداث */
+        .ads-card, .events-card, .groups-card {
+            padding: 16px;
+        }
+
+        .ad-item, .event-item, .group-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .ad-item:last-child, .event-item:last-child, .group-item:last-child {
+            border-bottom: none;
+        }
+
+        .ad-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .ad-content strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .ad-content p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .events-header, .groups-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .events-header h3, .groups-header h3 {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        .see-all {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .event-date {
+            background: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            min-width: 50px;
+        }
+
+        .event-date .day {
+            display: block;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .event-date .month {
+            font-size: 12px;
+        }
+
+        .event-info {
+            flex: 1;
+        }
+
+        .event-info strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .event-info span {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .group-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .group-info {
+            flex: 1;
+        }
+
+        .group-info strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .group-info span {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .join-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .join-btn:hover {
+            background: #166fe5;
+        }
+
+        /* تحسينات التجاوب */
+        @media (max-width: 1200px) {
+            .nav-search {
+                flex: 0 1 300px;
+            }
+            
+            .nav-item {
+                padding: 12px 30px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr 2fr;
+            }
+            
+            .sidebar-right {
+                display: none;
+            }
+            
+            .nav-search {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .sidebar-left {
+                display: none;
+            }
+            
+            .nav-main {
+                display: none;
+            }
+            
+            .nav-user {
+                gap: 4px;
+            }
+        }
+    </style>
 </body>
-</html>
+                          </html>
