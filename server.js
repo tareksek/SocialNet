@@ -1,5 +1,7 @@
 // server.js - نسخة HTML صافي 100% + أمان عالي + دعم Cloudinary v2
-require('dotenv').config();
+import('dotenv').then(dotenv => {
+  dotenv.config();
+});
 const express = require('express');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
