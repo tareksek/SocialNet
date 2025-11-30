@@ -27,11 +27,14 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 // إعداد lowdb داخل دالة async
 async function initDb() {
+  const defaultData = { users: [], posts: [], comments: [], likes: [] };
   const adapter = new JSONFile('database.json');
-  const db = new Low(adapter);
+  const db = new Low(adapter, defaultData);
+
   await db.read();
-  db.data ||= { users: [], posts: [], comments: [], likes: [] };
+  db.data ||= defaultData;
   await db.write();
+
   return db;
 }
 
