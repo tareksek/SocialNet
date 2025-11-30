@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MiniBook</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>MiniBook</h1>
+      <div class="user-info">
+        <span id="username"></span>
+        <a href="#" id="logout">تسجيل الخروج</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container feed">
+    <div class="card create-post">
+      <form id="postForm" enctype="multipart/form-data">
+        <textarea id="postContent" placeholder="ماذا يدور في بالك؟" required></textarea>
+        <div class="post-actions">
+          <label class="photo-btn">
+            <input type="file" id="postImage" name="image" accept="image/*" />
+            <i class="fas fa-image"></i> صورة
+          </label>
+          <button type="submit">نشر</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="postsContainer"></div>
+  </div>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>
