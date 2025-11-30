@@ -1,87 +1,222 @@
+// server.js
+require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const fs = require('fs').promises;
-const path = require('path'); // إضافة للتعامل مع المسارات
+const session = require('express-session');
+const FileStore = require('session-file-store')(session);
+const multer = require('multer');
+const { v2: cloudinary } = require('cloudinary');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const { Low } = require('lowdb');
+const { JSONFile } = require('lowdb/node');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const { v4: uuidv4 } = require('uuid');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const path = require('path');
+
 const app = express();
-const PORT = 3000;
-const SECRET = 'your-secret-key';
-const DB_FILE = path.join(__dirname, 'database.json'); // مسار مطلق لتجنب المشاكل
+const PORT = process.env.PORT || 3000;
 
-app.use(bodyParser.json());
-app.use(cors());
+// ==================== قاعدة البيانات ====================
+const adapter = new JSONFile('database.json');
+const db = new Low(adapter);
+await db.read();
+db.data ||= { 
+  users: [], 
+  posts: [], 
+  comments: [], 
+  likes: [],
+  sessions: [] 
+};
+await db.write();
+
+// ==================== الأمان الأساسي ====================
+app.use(helmet({
+  contentSecurityPolicy: false, // نتحكم فيه يدويًا إذا احتجنا لاحقًا
+}));
+
+// Rate limiting: 100 طلب كل 15 دقيقة لكل IP
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: "الكثير من الطلبات، حاول مرة أخرى لاحقًا",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api/', limiter); // فقط على الـ API لاحقًا
+app.use(limiter); // أو على كل الموقع
+
+// ==================== الجلسات الآمنة ====================
+app.use(session({
+  store: new FileStore({
+    path: './sessions',
+    ttl: 60 * 60 * 24 * 7, // أسبوع
+    retries: 2
+  }),
+  secret: process.env.SESSION_SECRET || 'mini-book-super-secret-key-change-in-production',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // true فقط على HTTPS
+    sameSite: 'strict',
+    maxAge: 1000 * 60 * 60 * 24 * 7 // أسبوع
+  }
+}));
+
+// ==================== Cloudinary ====================
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'minibook',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+  },
+});
+const upload = multer({ 
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 ميجا كحد أقصى
+});
+
+// ==================== Middleware ====================
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
-// وظيفة لقراءة DB مع التهيئة الافتراضية
-async function readDB() {
-  try {
-    const data = await fs.readFile(DB_FILE, 'utf8');
-    return JSON.parse(data);
-  } catch (err) {
-    console.error('Error reading DB:', err.message); // logging للأخطاء
-    // إنشاء الملف إذا غير موجود
-    const defaultDB = { users: [], posts: [], groups: [] };
-    await writeDB(defaultDB);
-    return defaultDB;
+// middleware لإرفاق المستخدم الحالي في كل طلب
+const attachUser = async (req, res, next) => {
+  if (req.session.userId) {
+    await db.read();
+    req.user = db.data.users.find(u => u.id === req.session.userId);
   }
-}
+  next();
+};
+app.use(attachUser);
 
-// وظيفة لكتابة DB
-async function writeDB(db) {
-  try {
-    await fs.writeFile(DB_FILE, JSON.stringify(db, null, 2));
-    console.log('DB written successfully'); // logging للتأكيد
-  } catch (err) {
-    console.error('Error writing DB:', err.message);
-    throw err; // رفع الخطأ للـ endpoint
+// middleware لحماية الصفحات التي تتطلب تسجيل دخول
+const requireLogin = (req, res, next) => {
+  if (!req.user) {
+    return res.redirect('/login?msg=يجب تسجيل الدخول أولاً');
   }
-}
+  next();
+};
 
-// middleware للتوثيق (دون تغيير)
-function authenticate(req, res, next) {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Unauthorized' });
-  try {
-    const decoded = jwt.verify(token, SECRET);
-    req.userId = decoded.userId;
-    next();
-  } catch (err) {
-    res.status(401).json({ error: 'Invalid token' });
-  }
-}
+// ==================== الصفحات الرئيسية ====================
 
-// روتات المستخدمين مع logging إضافي
+// الصفحة الرئيسية (الفيد)
+app.get('/', requireLogin, async (req, res) => {
+  await db.read();
+  const posts = db.data.posts
+    .sort((a, b) => b.createdAt - a.createdAt)
+    .map(post => {
+      const author = db.data.users.find(u => u.id === post.authorId);
+      post.authorName = author ? author.fullName : "مستخدم محذوف";
+      post.authorAvatar = author ? author.avatar : "/images/default-avatar.png";
+      post.likesCount = db.data.likes.filter(l => l.postId === post.id).length;
+      post.commentsCount = db.data.comments.filter(c => c.postId === post.id).length;
+      post.isLiked = db.data.likes.some(l => l.postId === post.id && l.userId === req.user.id);
+      return post;
+    });
+
+  res.render('index', { user: req.user, posts });
+});
+
+// صفحة التسجيل
+app.get('/register', (req, res) => {
+  if (req.user) return res.redirect('/');
+  res.render('register', { error: null });
+});
+
 app.post('/register', async (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) return res.status(400).json({ error: 'Missing fields' });
-  try {
-    const db = await readDB();
-    if (db.users.find(u => u.username === username)) return res.status(409).json({ error: 'User exists' });
-    const hash = await bcrypt.hash(password, 10);
-    const user = { id: Date.now(), username, passwordHash: hash, profile: { name: username, bio: '', avatar: '' } };
-    db.users.push(user);
-    await writeDB(db);
-    res.json({ message: 'Registered' });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
+  const { fullName, email, password, confirmPassword } = req.body;
+
+  if (password !== confirmPassword) {
+    return res.render('register', { error: "كلمتا المرور غير متطابقتين" });
   }
+
+  await db.read();
+  if (db.data.users.some(u => u.email === email)) {
+    return res.render('register', { error: "البريد الإلكتروني مسجل مسبقًا" });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 12);
+
+  const newUser = {
+    id: uuidv4(),
+    fullName,
+    email,
+    password: hashedPassword,
+    avatar: "https://res.cloudinary.com/yourcloud/image/upload/v1/minibook/default-avatar.png", // يمكنك رفع صورة افتراضية
+    createdAt: Date.now()
+  };
+
+  db.data.users.push(newUser);
+  await db.write();
+
+  // تسجيل دخول تلقائي بعد التسجيل
+  req.session.userId = newUser.id;
+  res.redirect('/');
+});
+
+// صفحة تسجيل الدخول
+app.get('/login', (req, res) => {
+  if (req.user) return res.redirect('/');
+  res.render('login', { error: req.query.msg || null });
 });
 
 app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  try {
-    const db = await readDB();
-    const user = db.users.find(u => u.username === username);
-    if (!user || !(await bcrypt.compare(password, user.passwordHash))) return res.status(401).json({ error: 'Invalid credentials' });
-    const token = jwt.sign({ userId: user.id }, SECRET, { expiresIn: '1h' });
-    res.json({ token });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  } 
+  const { email, password } = req.body;
+
+  await db.read();
+  const user = db.data.users.find(u => u.email === email);
+
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    return res.render('login', { error: "بيانات الدخول غير صحيحة" });
+  }
+
+  req.session.userId = user.id;
+  res.redirect('/');
 });
 
-// باقي الروتات دون تغيير (أضف try-catch مشابه إذا لزم للروتات الأخرى)
+// تسجيل الخروج
+app.get('/logout', (req, res) => {
+  req.session.destroy(() => {
+    res.redirect('/login');
+  });
+});
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// ==================== إنشاء منشور ====================
+app.post('/post', requireLogin, upload.single('image'), async (req, res) => {
+  const { content } = req.body;
+
+  if (!content.trim() && !req.file) {
+    return res.redirect('/');
+  }
+
+  const newPost = {
+    id: uuidv4(),
+    authorId: req.user.id,
+    content: content.trim(),
+    image: req.file ? req.file.path : null,
+    createdAt: Date.now()
+  };
+
+  await db.read();
+  db.data.posts.push(newPost);
+  await db.write();
+
+  res.redirect('/');
+});
+
+// باقي الـ API (إعجاب، تعليق، حذف...) سنضيفها في الخطوة القادمة
+
+app.listen(PORT, () => {
+  console.log(`MiniBook يعمل بأمان عالي على http://localhost:${PORT}`);
+});
