@@ -22,7 +22,7 @@ function login() {
     if (data.token) {
       token = data.token;
       localStorage.setItem('token', token);
-      window.location.href = 'feed.html';
+      window.location.href = '/feed.html';
     } else {
       showError(data.error || 'فشل الدخول');
     }
@@ -46,7 +46,7 @@ function register() {
        ).then(res => res.json()).then(data => {
     if (data.message) {
       alert('تم التسجيل بنجاح');
-      window.location.href = 'index.html';
+      window.location.href = '/feed.html';
     } else {
       showError(data.error || 'فشل التسجيل');
     }
