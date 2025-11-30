@@ -47,7 +47,7 @@ if (document.getElementById('postsContainer')) {
 
   // جلب اسم المستخدم
   fetch('/api/posts').then(r => r.json()).then(posts => {
-    if (posts.error) location.href = '/login.html';
+    if (posts.error) location.href = '/index.html';
     usernameSpan.textContent = posts[0] ? posts[0].authorName : 'مستخدم';
   });
 
