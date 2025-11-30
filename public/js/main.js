@@ -1,70 +1,36 @@
-// دالة مساعدة للـ fetch
-const api = async (url, options = {}) => {
-  const res = await fetch(url, {
-    headers: { "Content-Type": "application/json" },
-    ...options
-  });
-  return res.json();
-};
+// public/js/main.js – نسخة يدوية فقط (لا تحديث تلقائي أبدًا)
 
-// تسجيل الدخول والتسجيل
-if (document.getElementById('loginForm')) {
-  document.getElementById('loginForm').onsubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData);
-    const res = await api('/api/login', {
-      method: 'POST',
-      body: JSON.stringify(data)
-    });
-    if (res.success) location.href = res.redirect;
-    else document.getElementById('error').textContent = res.message;
-  };
-}
+const postsContainer = document.getElementById('postsContainer');
+const usernameSpan   = document.getElementById('username');
+const logoutBtn      = document.getElementById('logout');
 
-if (document.getElementById('registerForm')) {
-  document.getElementById('registerForm').onsubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData);
-    if (data.password !== data.confirmPassword) {
-      document.getElementById('error').textContent = "كلمتا المرور غير متطابقتين";
+// جلب المنشورات (مرة واحدة أو عند الضغط على زر)
+async function loadPosts() {
+  try {
+    const res = await fetch('/api/posts');
+    if (res.status === 401) {
+      location.href = '/login.html';
       return;
     }
-    const res = await api('/api/register', {
-      method: 'POST',
-      body: JSON.stringify(data)
-    });
-    if (res.success) location.href = res.redirect;
-    else document.getElementById('error').textContent = res.message;
-  };
-}
+    const posts = await res.json();
 
-// الصفحة الرئيسية
-if (document.getElementById('postsContainer')) {
-  const postsContainer = document.getElementById('postsContainer');
-  const usernameSpan = document.getElementById('username');
+    // عرض اسم المستخدم في الهيدر
+    if (posts.length > 0) {
+      usernameSpan.textContent = posts[0].authorName || 'مستخدم';
+    }
 
-  // جلب اسم المستخدم
-  fetch('/api/posts').then(r => r.json()).then(posts => {
-    if (posts.error) location.href = '/index.html';
-    usernameSpan.textContent = posts[0] ? posts[0].authorName : 'مستخدم';
-  });
-
-  // جلب المنشورات
-  const loadPosts = async () => {
-    const posts = await api('/api/posts');
+    // عرض المنشورات
     postsContainer.innerHTML = posts.map(post => `
       <div class="card post">
         <div class="post-header">
-          <img src="${post.authorAvatar}" class="avatar">
+          <img src="${post.authorAvatar}" class="avatar" alt="avatar">
           <div>
             <h3>${post.authorName}</h3>
             <small>${new Date(post.createdAt).toLocaleString('ar-EG')}</small>
           </div>
         </div>
-        <p>${post.content}</p>
-        ${post.image ? `<img src="${post.image}" class="post-image">` : ''}
+        <p>${post.content.replace(/\n/g, '<br)}</p>
+        ${post.image ? `<img src="${post.image}" class="post-image" alt="صورة">` : ''}
         <div class="post-footer">
           <button class="like-btn ${post.isLiked ? 'liked' : ''}">
             إعجاب (${post.likesCount || 0})
@@ -72,27 +38,39 @@ if (document.getElementById('postsContainer')) {
         </div>
       </div>
     `).join('');
-  };
 
-  // إنشاء منشور
-  document.getElementById('postForm').onsubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append('content', document.getElementById('postContent').value);
-    const image = document.getElementById('postImage').files[0];
-    if (image) formData.append('image', image);
-
-    await fetch('/api/post', { method: 'POST', body: formData });
-    document.getElementById('postForm').reset();
-    loadPosts();
-  };
-
-  // تسجيل الخروج
-  document.getElementById('logout').onclick = async (e) => {
-    e.preventDefault();
-    await api('/api/logout');
-    location.href = '/login.html';
-  };
-
-  loadPosts();
+  } catch (err) {
+    console.error(err);
+  }
 }
+
+// إنشاء منشور جديد
+document.getElementById('postForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData();
+  const content = document.getElementById('postContent').value.trim();
+  const image   = document.getElementById('postImage').files[0];
+
+  if (!content && !image) return;
+
+  if (content) formData.append('content', content);
+  if (image)   formData.append('image', image);
+
+  await fetch('/api/post', {
+    method: 'POST',
+    body: formData
+  });
+
+  document.getElementById('postForm').reset();
+  loadPosts(); // تحديث يدوي بعد النشر
+});
+
+// تسجيل الخروج
+logoutBtn?.addEventListener('click', async (e) => {
+  e.preventDefault();
+  await fetch('/api/logout');
+  location.href = '/login.html';
+});
+
+// تحميل المنشورات مرة واحدة فقط عند فتح الصفحة
+loadPosts();
